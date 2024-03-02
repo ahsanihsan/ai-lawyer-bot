@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import "./App.css";
+import Modal from "./component/Modal";
 import { URL_API } from "./url";
 
 function App() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const [activeSource, setActiveSource] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSendMessage = async () => {
@@ -22,6 +25,7 @@ function App() {
         const responseMessage = {
           id: Date.now() + 1,
           text: data.answer,
+          source: data.source_documents,
           sender: "bot",
         };
         setMessages((messages) => [...messages, responseMessage]);
@@ -46,6 +50,19 @@ function App() {
     }
   };
 
+  const showSourceContent = () => {
+    if (activeSource && activeSource.source)
+      return Object.keys(activeSource.source).map((item) => {
+        return (
+          <div>
+            <p>{activeSource.source[item]}</p>
+            <br />
+            <br />
+          </div>
+        );
+      });
+  };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -54,6 +71,17 @@ function App() {
           {messages.map((message) => (
             <div key={message.id} className={`message ${message.sender}`}>
               {message.text}
+              {message.source ? (
+                <p
+                  className="source-btn"
+                  onClick={() => {
+                    setIsModalOpen(true);
+                    setActiveSource(message);
+                  }}
+                >
+                  Source
+                </p>
+              ) : undefined}
             </div>
           ))}
           {isLoading && <div className="message bot">Loading...</div>}{" "}
@@ -68,6 +96,11 @@ function App() {
           <button onClick={handleSendMessage}>Send</button>
         </div>
       </header>
+      {activeSource ? (
+        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+          <p>{showSourceContent()}</p>
+        </Modal>
+      ) : undefined}
     </div>
   );
 }
