@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import Modal from "./component/Modal";
 import { URL_API } from "./url";
@@ -9,6 +9,38 @@ function App() {
   const [activeSource, setActiveSource] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isUsernameModalOpen, setIsUsernameModalOpen] = useState(false);
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    const storedUsername = localStorage.getItem("username");
+    if (!storedUsername) {
+      setIsUsernameModalOpen(true);
+    } else {
+      setUsername(storedUsername);
+    }
+  }, []);
+
+  const handleUsernameSubmit = async () => {
+    try {
+      const response = await fetch(
+        `${URL_API}CreateUser?user_name=${username}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await response.json();
+      localStorage.setItem("username", username);
+      setIsUsernameModalOpen(false);
+    } catch (error) {
+      console.error("Error creating user:", error);
+      alert("An error occurred while creating the user.");
+    }
+  };
 
   const handleSendMessage = async () => {
     if (!input.trim()) return;
@@ -16,6 +48,7 @@ function App() {
     setMessages([...messages, userMessage]);
     setInput("");
     setIsLoading(true);
+
     try {
       const response = await fetch(
         `${URL_API}AskQuestion?use_querry=${encodeURIComponent(input)}`
@@ -66,7 +99,12 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Lawyer AI Bot</h1>
+        <div>
+          <h1>Lawyer AI Bot</h1>
+          <button onClick={() => [localStorage.setItem("username", "")]}>
+            Remove User
+          </button>
+        </div>
         <div className="chat-window">
           {messages.map((message) => (
             <div key={message.id} className={`message ${message.sender}`}>
@@ -84,7 +122,7 @@ function App() {
               ) : undefined}
             </div>
           ))}
-          {isLoading && <div className="message bot">Loading...</div>}{" "}
+          {isLoading && <div className="message bot">Loading...</div>}
         </div>
         <div className="text-field-container">
           <input
@@ -97,10 +135,30 @@ function App() {
         </div>
       </header>
       {activeSource ? (
-        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <Modal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          showClose={true}
+        >
+          <h1>Sources</h1>
           <p>{showSourceContent()}</p>
         </Modal>
       ) : undefined}
+      <Modal
+        isOpen={isUsernameModalOpen}
+        onClose={() => setIsUsernameModalOpen(false)}
+        showClose={false}
+      >
+        <div className="username-modal-content">
+          <h2>Enter Username</h2>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <button onClick={handleUsernameSubmit}>Submit</button>
+        </div>
+      </Modal>
     </div>
   );
 }
