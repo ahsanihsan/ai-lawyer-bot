@@ -1,0 +1,58 @@
+
+/* + Sidebar Components */
+.sidebar-container {
+    position: sticky;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    min-width: 250px;
+    border-right: 1px solid #313535;
+    overflow-y: auto;
+  
+    scrollbar-width: thin;
+    scrollbar-color: #464e4e #181818;
+  }
+  
+  .sidebar-wrapper {
+    display: grid;
+    gap: 10px;
+  }
+  
+  .sidebar-top {
+    padding: 20px;
+  }
+  
+  .new-thread {
+    border: 1px solid #313535;
+    padding: 10px;
+    border-radius: 6px;
+    background-color: #242424;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+  
+    font-size: 1rem;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+  .new-thread span:last-child {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-left: auto;
+  }
+  
+  .thread-list-wrapper {
+    display: grid;
+    gap: 10px;
+  }
+  
+  .thread-list {
+    border-top: 1px solid #313535;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  
+  }
+  

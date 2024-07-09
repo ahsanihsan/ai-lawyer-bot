@@ -1,0 +1,97 @@
+/* + Chat Component */
+
+.chat-container {
+  width: 100%;
+  padding-right: 1rem;
+  height: 100%;
+}
+
+.App-header {
+  width: 100%;
+}
+
+.chat-wrapper {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.chat-window {
+  background-color: #242424; /* Darker shade for the chat window */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4); /* More pronounced shadow for depth */
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+  height: 620px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #646b6b #181818;
+}
+
+.message {
+  padding: 10px 20px;
+  border-radius: 20px;
+  max-width: 100%;
+  /* word-wrap: break-word; */
+}
+
+.user {
+  align-self: flex-end;
+  background-color: #0d6efd; /* Slightly brighter blue for user messages */
+  color: white; /* White text for readability */
+}
+
+.bot {
+  align-self: flex-start;
+  background-color: #242424; /* Dark grey for bot messages */
+  color: #e1e1e1; /* Light text color for readability */
+}
+
+.text-field-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 10px 20px;
+  border-radius: 20px;
+  background-color: #242424; /* Dark grey background for input field */
+  border: 1px solid #313535; /* Slightly lighter border for contrast */
+  color: #e1e1e1; /* Light text color for input */
+  font-size: 16px;
+}
+
+textarea:focus,
+input:focus {
+  outline: none;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #0d6efd; /* Blue background for the send button */
+  color: white; /* White text color */
+  border: none;
+  border-radius: 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3; /* Darker blue on hover for visual feedback */
+}
+
+.source-btn {
+  text-decoration: underline;
+  margin-top: 10px;
+  cursor: pointer;
+}
