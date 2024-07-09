@@ -18,6 +18,7 @@ html {
   position: relative;
 }
 
+
 input[type="text"] {
   width: 100%;
   padding: 10px 20px;
@@ -57,3 +58,4 @@ button:hover {
   display: flex;
   gap: 10px;
 }
+

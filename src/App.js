@@ -1,166 +1,133 @@
-import React, { useEffect, useState } from "react";
-import "./App.css";
-import Modal from "./component/Modal";
+import React, { useCallback, useEffect, useState } from "react";
+import { Routes, Route } from "react-router-dom";
+import Threads from "./pages/Threads";
+import Home from "./pages/Home";
+import Sidebar from "./component/sidebar/Sidebar";
 import { URL_API } from "./url";
+import Modal from "./component/Modal";
 
-function App() {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
-  const [activeSource, setActiveSource] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isUsernameModalOpen, setIsUsernameModalOpen] = useState(false);
+const App = () => {
+  const [threadList, setThreadList] = useState([]);
   const [username, setUsername] = useState("");
+  const [isUsernameModalOpen, setIsUsernameModalOpen] = useState(false);
 
+  const fetchThreads = useCallback(async (username) => {
+    try {
+      const response = await fetch(`${URL_API}GetThreadList?user_name=${username}`, {
+        method: "GET",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log({ response });
+
+      if (response.ok) {
+        const data = await response.json();
+
+        setThreadList(data?.reverse());
+      } else {
+        alert("An error occurred while fetching the threads.");
+      }
+    } catch (error) {
+      console.error("Error fetching threads:", error);
+    }
+  }, []);
+
+  const storedUsername = localStorage.getItem("username");
   useEffect(() => {
-    const storedUsername = localStorage.getItem("username");
     if (!storedUsername) {
       setIsUsernameModalOpen(true);
     } else {
       setUsername(storedUsername);
+      fetchThreads(storedUsername);
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isUsernameModalOpen, storedUsername]);
 
-  const handleUsernameSubmit = async () => {
+  const addNewThread = async () => {
     try {
-      const response = await fetch(
-        `${URL_API}CreateUser?user_name=${username}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`${URL_API}CreateThread?user_name=${username}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       const data = await response.json();
-      localStorage.setItem("username", username);
-      setIsUsernameModalOpen(false);
+      if (response.status === 200) {
+        fetchThreads(username);
+      } else {
+        alert("An error occurred while creating the thread.");
+      }
+      console.log(data);
+    } catch (error) {
+      console.error("Error creating user:", error);
+    }
+  };
+
+  const handleUsernameSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch(`${URL_API}CreateUser?user_name=${username}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.status === 200) {
+        localStorage.setItem("username", username);
+        setIsUsernameModalOpen(false);
+        setUsername("");
+      } else if (response.status === 404) {
+        localStorage.setItem("username", username);
+        setIsUsernameModalOpen(false);
+        setUsername("");
+      }
     } catch (error) {
       console.error("Error creating user:", error);
       alert("An error occurred while creating the user.");
     }
   };
-
-  const handleSendMessage = async () => {
-    if (!input.trim()) return;
-    const userMessage = { id: Date.now(), text: input, sender: "user" };
-    setMessages([...messages, userMessage]);
-    setInput("");
-    setIsLoading(true);
-
-    try {
-      const response = await fetch(
-        `${URL_API}AskQuestion?use_querry=${encodeURIComponent(input)}`
-      );
-      const data = await response.json();
-      if (data.status === "Pass") {
-        const responseMessage = {
-          id: Date.now() + 1,
-          text: data.answer,
-          source: data.source_documents,
-          sender: "bot",
-        };
-        setMessages((messages) => [...messages, responseMessage]);
-      } else {
-        const errorMessage = {
-          id: Date.now() + 1,
-          text: "Sorry, I couldn't process your request.",
-          sender: "bot",
-        };
-        setMessages((messages) => [...messages, errorMessage]);
-      }
-    } catch (error) {
-      console.error("Fetching error:", error);
-      const errorMessage = {
-        id: Date.now() + 1,
-        text: "An error occurred while processing your request.",
-        sender: "bot",
-      };
-      setMessages((messages) => [...messages, errorMessage]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const showSourceContent = () => {
-    if (activeSource && activeSource.source)
-      return Object.keys(activeSource.source).map((item) => {
-        return (
-          <div>
-            <p>{activeSource.source[item]}</p>
-            <br />
-            <br />
-          </div>
-        );
-      });
-  };
-
   return (
     <div className="App">
-      <header className="App-header">
-        <div>
-          <h1>Lawyer AI Bot</h1>
-          <button onClick={() => [localStorage.setItem("username", "")]}>
-            Remove User
-          </button>
-        </div>
-        <div className="chat-window">
-          {messages.map((message) => (
-            <div key={message.id} className={`message ${message.sender}`}>
-              {message.text}
-              {message.source ? (
-                <p
-                  className="source-btn"
-                  onClick={() => {
-                    setIsModalOpen(true);
-                    setActiveSource(message);
-                  }}
-                >
-                  Source
-                </p>
-              ) : undefined}
-            </div>
-          ))}
-          {isLoading && <div className="message bot">Loading...</div>}
-        </div>
-        <div className="text-field-container">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+      <div className="root-container">
+        <Sidebar addNewThread={addNewThread} threadList={threadList} />
+        <Routes>
+          <Route path="/" element={<Home setIsUsernameModalOpen={setIsUsernameModalOpen} />} />
+          <Route
+            path="/:id"
+            element={<Threads setIsUsernameModalOpen={setIsUsernameModalOpen} />}
           />
-          <button onClick={handleSendMessage}>Send</button>
-        </div>
-      </header>
-      {activeSource ? (
-        <Modal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          showClose={true}
-        >
-          <h1>Sources</h1>
-          <p>{showSourceContent()}</p>
-        </Modal>
-      ) : undefined}
+        </Routes>
+      </div>
+
+      {/* //- User Login - Entery Model - Dialog */}
       <Modal
         isOpen={isUsernameModalOpen}
         onClose={() => setIsUsernameModalOpen(false)}
         showClose={false}
-      >
-        <div className="username-modal-content">
+        disableOverlayClose={true}>
+        <div className="">
           <h2>Enter Username</h2>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <button onClick={handleUsernameSubmit}>Submit</button>
+          <form onSubmit={handleUsernameSubmit} className="modal-form-wrapper">
+            <input
+              type="text"
+              value={username}
+              required
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <button type="submit">Login</button>
+          </form>
         </div>
       </Modal>
     </div>
   );
-}
+};
 
 export default App;

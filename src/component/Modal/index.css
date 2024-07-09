@@ -12,12 +12,12 @@
 }
 
 .modal-content {
-  background-color: #2c2c2e;
+  background-color: #242424;
   padding: 20px;
   border-radius: 8px;
   width: 80vw;
   height: 80vh;
-  overflow: scroll;
+  overflow: auto;
   animation: slideIn 0.5s;
 }
 
