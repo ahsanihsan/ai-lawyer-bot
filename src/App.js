@@ -1,17 +1,23 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import Threads from "./pages/Threads";
 import Home from "./pages/Home";
 import Sidebar from "./component/sidebar/Sidebar";
 import { URL_API } from "./url";
 import Modal from "./component/Modal";
+import "./App.css";
 
 const App = () => {
+  const navigate = useNavigate();
+
   const [threadList, setThreadList] = useState([]);
   const [username, setUsername] = useState("");
   const [isUsernameModalOpen, setIsUsernameModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+
 
   const fetchThreads = useCallback(async (username) => {
+    setLoading(true);
     try {
       const response = await fetch(`${URL_API}GetThreadList?user_name=${username}`, {
         method: "GET",
@@ -21,17 +27,17 @@ const App = () => {
         },
       });
 
-      console.log({ response });
-
       if (response.ok) {
         const data = await response.json();
-
         setThreadList(data?.reverse());
       } else {
         alert("An error occurred while fetching the threads.");
       }
     } catch (error) {
       console.error("Error fetching threads:", error);
+    }
+    finally {
+      setLoading(false);
     }
   }, []);
 
@@ -47,6 +53,7 @@ const App = () => {
   }, [isUsernameModalOpen, storedUsername]);
 
   const addNewThread = async () => {
+    setLoading(true);
     try {
       const response = await fetch(`${URL_API}CreateThread?user_name=${username}`, {
         method: "POST",
@@ -58,12 +65,15 @@ const App = () => {
       const data = await response.json();
       if (response.status === 200) {
         fetchThreads(username);
+        navigate(`/${data}`);
       } else {
         alert("An error occurred while creating the thread.");
       }
-      console.log(data);
     } catch (error) {
-      console.error("Error creating user:", error);
+      console.error("Error creating thread:", error);
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -97,12 +107,12 @@ const App = () => {
   return (
     <div className="App">
       <div className="root-container">
-        <Sidebar addNewThread={addNewThread} threadList={threadList} />
+        <Sidebar addNewThread={addNewThread} threadList={threadList} loading={loading} />
         <Routes>
-          <Route path="/" element={<Home setIsUsernameModalOpen={setIsUsernameModalOpen} />} />
+          <Route path="/" element={<Home addNewThread={addNewThread} />} />
           <Route
             path="/:id"
-            element={<Threads setIsUsernameModalOpen={setIsUsernameModalOpen} />}
+            element={<Threads setIsUsernameModalOpen={setIsUsernameModalOpen} loading={loading} />}
           />
         </Routes>
       </div>

@@ -1,5 +1,3 @@
-/* + Chat Component */
-
 .chat-container {
   width: 100%;
   padding-right: 1rem;
@@ -19,8 +17,8 @@
 }
 
 .chat-window {
-  background-color: #242424; /* Darker shade for the chat window */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4); /* More pronounced shadow for depth */
+  background-color: #242424;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
   border-radius: 8px;
   padding: 20px;
   margin: 20px 0;
@@ -39,19 +37,21 @@
   padding: 10px 20px;
   border-radius: 20px;
   max-width: 100%;
-  /* word-wrap: break-word; */
+  font-size: 0.8rem;
+  line-height: 1.4rem;
 }
 
 .user {
   align-self: flex-end;
-  background-color: #0d6efd; /* Slightly brighter blue for user messages */
-  color: white; /* White text for readability */
+  background-color: #0d6efd;
+  color: white;
 }
 
 .bot {
   align-self: flex-start;
-  background-color: #242424; /* Dark grey for bot messages */
-  color: #e1e1e1; /* Light text color for readability */
+  background-color: #1e1e1e;
+  color: #e1e1e1;
+  border: 1px solid #1e1e1e70;
 }
 
 .text-field-container {
@@ -65,9 +65,9 @@ input[type="text"] {
   width: 100%;
   padding: 10px 20px;
   border-radius: 20px;
-  background-color: #242424; /* Dark grey background for input field */
-  border: 1px solid #313535; /* Slightly lighter border for contrast */
-  color: #e1e1e1; /* Light text color for input */
+  background-color: #242424;
+  border: 1px solid #313535;
+  color: #e1e1e1;
   font-size: 16px;
 }
 
@@ -78,8 +78,8 @@ input:focus {
 
 button {
   padding: 10px 20px;
-  background-color: #0d6efd; /* Blue background for the send button */
-  color: white; /* White text color */
+  background-color: #0d6efd;
+  color: white;
   border: none;
   border-radius: 20px;
   font-size: 16px;
@@ -87,7 +87,7 @@ button {
 }
 
 button:hover {
-  background-color: #0056b3; /* Darker blue on hover for visual feedback */
+  background-color: #0056b3;
 }
 
 .source-btn {

@@ -1,12 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import "./sidebar.css";
-import { Link } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
-const Sidebar = ({ addNewThread, threadList }) => {
+const Sidebar = ({ addNewThread, threadList, loading }) => {
+  const [navLoading, setNavLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleNavigation = (thread) => {
+    setNavLoading(true);
+    setTimeout(() => {
+      navigate(`/${thread}`);
+      setNavLoading(false);
+    }, 500); 
+  };
+
   return (
     <aside className="sidebar-container">
       <div className="sidebar-wrapper">
-        {/* Add New Thread Button */}
         <div className="sidebar-top">
           <div className="new-thread" onClick={addNewThread}>
             <span>🤖</span>
@@ -15,11 +25,19 @@ const Sidebar = ({ addNewThread, threadList }) => {
           </div>
         </div>
         <div className="thread-list-wrapper">
-          {threadList.map((thread, index) => (
-            <Link to={`/${thread}`} key={index} className="thread-list">
-              <div>Chat {thread}</div>
-            </Link>
-          ))}
+          {loading || navLoading ? (
+            <div className="loading-indicator">Loading...</div>
+          ) : (
+            threadList.map((thread, index) => (
+              <NavLink
+                to={`/${thread}`}
+                key={index}
+                className={({ isActive }) => `thread-list ${isActive ? "active" : ""}`}
+                onClick={() => handleNavigation(thread)}>
+                <div>Chat {thread}</div>
+              </NavLink>
+            ))
+          )}
         </div>
       </div>
     </aside>

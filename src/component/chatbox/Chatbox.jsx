@@ -6,15 +6,17 @@ import { useNavigate } from "react-router-dom";
 const Chatbox = ({
   setIsUsernameModalOpen,
   messages,
+  setMessages,
   setIsModalOpen,
   setActiveSource,
-  setMessages,
+  loading,
   threadId,
 }) => {
+  const navigate = useNavigate();
+
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const username = localStorage.getItem("username");
-  const navigate = useNavigate();
 
   const fetchThreads = async () => {
     try {
@@ -75,9 +77,7 @@ const Chatbox = ({
       const response = await fetch(
         `${URL_API}AskQuestion?user_name=${username}&user_querry=${input}&thread_index=${threadId}`
       );
-      console.log({ response });
       const data = await response.json();
-      console.log({ data });
       if (response.status === 200) {
         const responseMessage = {
           id: Date.now() + 1,
@@ -109,22 +109,9 @@ const Chatbox = ({
 
   const removeUser = async () => {
     try {
-      // const response = await fetch(`${URL_API}RemoveUser?user_name=${username}`, {
-      //   method: "DELETE",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      // });
-
-      // const data = await response.json();
-      // if (response.status === 200) {
       localStorage.removeItem("username");
       setIsUsernameModalOpen(true);
       navigate("/");
-      // } else {
-      //   localStorage.removeItem("username");
-      //   setIsUsernameModalOpen(true);
-      // }
     } catch (error) {
       console.error("Error creating user:", error);
     }
@@ -134,30 +121,33 @@ const Chatbox = ({
     <div className="App-header">
       <div>
         <h1>Lawyer AI Bot</h1>
-        {/* <button onClick={() => [localStorage.setItem("username", "")]}>Remove User</button> */}
         <button onClick={removeUser}>Remove User</button>
       </div>
 
       {/* //- Display Uer Chat Component */}
       <div className="chat-wrapper">
-        <div className="chat-window">
-          {messages.map((message) => (
-            <div key={message.id} className={`message ${message.sender}`}>
-              {message.text}
-              {message.source ? (
-                <p
-                  className="source-btn"
-                  onClick={() => {
-                    setIsModalOpen(true);
-                    setActiveSource(message);
-                  }}>
-                  Source
-                </p>
-              ) : undefined}
-            </div>
-          ))}
-          {isLoading && <div className="message bot">Loading...</div>}
-        </div>
+        {loading ? (
+          <div className="loading-indicator">Loading...</div>
+        ) : (
+          <div className="chat-window">
+            {messages.map((message) => (
+              <div key={message.id} className={`message ${message.sender}`}>
+                {message.text}
+                {message.source ? (
+                  <p
+                    className="source-btn"
+                    onClick={() => {
+                      setIsModalOpen(true);
+                      setActiveSource(message);
+                    }}>
+                    Source
+                  </p>
+                ) : undefined}
+              </div>
+            ))}
+            {isLoading && <div className="message bot">Loading...</div>}
+          </div>
+        )}
 
         {/* //- Uer Quotes Input Component */}
         <form onSubmit={handleSendMessage} className="text-field-container">
