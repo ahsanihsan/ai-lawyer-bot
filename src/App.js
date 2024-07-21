@@ -21,7 +21,6 @@ const App = () => {
     try {
       const response = await fetch(`${URL_API}GetThreadList?user_name=${username}`, {
         method: "GET",
-
         headers: {
           "Content-Type": "application/json",
         },
