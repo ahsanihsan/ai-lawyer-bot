@@ -123,7 +123,7 @@ const App = () => {
         showClose={false}
         disableOverlayClose={true}>
         <div className="">
-          <h2>Enter Username</h2>
+          <h2>Enter Username To Login</h2>
           <form onSubmit={handleUsernameSubmit} className="modal-form-wrapper">
             <input
               type="text"
