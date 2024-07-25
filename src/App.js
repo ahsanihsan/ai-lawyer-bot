@@ -108,7 +108,7 @@ const App = () => {
       <div className="root-container">
         <Sidebar addNewThread={addNewThread} threadList={threadList} loading={loading} />
         <Routes>
-          <Route path="/" element={<Home addNewThread={addNewThread} />} />
+          <Route path="/" element={<Home addNewThread={addNewThread} loading={loading} />} />
           <Route
             path="/:id"
             element={<Threads setIsUsernameModalOpen={setIsUsernameModalOpen} loading={loading} />}
